@@ -66,7 +66,7 @@ If `Pixhawk6C` appears in the output, the target board is available for the buil
 To keep the main branch clean, create a dedicated development branch:
 
 ```bash
-git switch -c 6thrust-6dof
+git switch -c customrov
 git status
 ```
 
@@ -315,7 +315,9 @@ ardupilot/
 │
 └── Personal_Research/
     ├── make_dockerimage.sh
-    └── build_customrov.sh
+    ├── build_customrov.sh
+    ├── Thruster_Frame
+    └── Firmware 
 ```
 
 ---
