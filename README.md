@@ -1,162 +1,337 @@
-# ArduPilot Project
+# ArduSub Custom
 
-[![Discord](https://img.shields.io/discord/674039678562861068.svg)](https://ardupilot.org/discord)
+This repository contains the results of research on **custom thruster configuration for ROVs using ArduSub firmware**.
 
-[![Test Copter](https://github.com/ArduPilot/ardupilot/workflows/test%20copter/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_sitl_copter.yml) [![Test Plane](https://github.com/ArduPilot/ardupilot/workflows/test%20plane/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_sitl_plane.yml) [![Test Rover](https://github.com/ArduPilot/ardupilot/workflows/test%20rover/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_sitl_rover.yml) [![Test Sub](https://github.com/ArduPilot/ardupilot/workflows/test%20sub/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_sitl_sub.yml) [![Test Tracker](https://github.com/ArduPilot/ardupilot/workflows/test%20tracker/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_sitl_tracker.yml)
+The customization of the thruster configuration is used to determine a **control allocation** that matches the designed thruster arrangement. The results of this research can be used as a basis for determining a more optimal physical configuration of an underwater vehicle for operation under diverse underwater environmental conditions.
 
-[![Test AP_Periph](https://github.com/ArduPilot/ardupilot/workflows/test%20ap_periph/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_sitl_periph.yml) [![Test Chibios](https://github.com/ArduPilot/ardupilot/workflows/test%20chibios/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_chibios.yml) [![Test Linux SBC](https://github.com/ArduPilot/ardupilot/workflows/test%20Linux%20SBC/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_linux_sbc.yml) [![Test Replay](https://github.com/ArduPilot/ardupilot/workflows/test%20replay/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_replay.yml)
+This research is intended for firmware running on **Pixhawk 6C**. To apply the configuration to another Pixhawk series, the target board can be adjusted through the `--board` parameter during the build process.
 
-[![Test Unit Tests](https://github.com/ArduPilot/ardupilot/workflows/test%20unit%20tests%20and%20sitl%20building/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_unit_tests.yml)[![test size](https://github.com/ArduPilot/ardupilot/actions/workflows/test_size.yml/badge.svg)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_size.yml)
+---
 
-[![Test Environment Setup](https://github.com/ArduPilot/ardupilot/actions/workflows/test_environment.yml/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_environment.yml)
+## Prerequisites
 
-[![Cygwin Build](https://github.com/ArduPilot/ardupilot/actions/workflows/cygwin_build.yml/badge.svg)](https://github.com/ArduPilot/ardupilot/actions/workflows/cygwin_build.yml) [![Macos Build](https://github.com/ArduPilot/ardupilot/actions/workflows/macos_build.yml/badge.svg)](https://github.com/ArduPilot/ardupilot/actions/workflows/macos_build.yml)
+Before using this repository, make sure the following are available:
 
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/5331/badge.svg)](https://scan.coverity.com/projects/ardupilot-ardupilot)
+* Ubuntu 22.04 or later
+* Docker Engine
+* Git
+* This repository
 
-[![Test Coverage](https://github.com/ArduPilot/ardupilot/actions/workflows/test_coverage.yml/badge.svg?branch=master)](https://github.com/ArduPilot/ardupilot/actions/workflows/test_coverage.yml)
+### Docker Engine
 
-[![Autotest Status](https://autotest.ardupilot.org/autotest-badge.svg)](https://autotest.ardupilot.org/)
+Install Docker Engine by following the official documentation:
 
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10598/badge)](https://www.bestpractices.dev/projects/10598)
+[Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
-ArduPilot is the most advanced, full-featured, and reliable open source autopilot software available.
-It has been under development since 2010 by a diverse team of professional engineers, computer scientists, and community contributors.
-Our autopilot software is capable of controlling almost any vehicle system imaginable, from conventional airplanes, quad planes, multi-rotors, and helicopters to rovers, boats, balance bots, and even submarines.
-It is continually being expanded to provide support for new emerging vehicle types.
+### Git
 
-## The ArduPilot project is made up of
+Make sure Git is installed:
 
-- ArduCopter: [code](https://github.com/ArduPilot/ardupilot/tree/master/ArduCopter), [wiki](https://ardupilot.org/copter/index.html)
+```bash
+git --version
+```
 
-- ArduPlane: [code](https://github.com/ArduPilot/ardupilot/tree/master/ArduPlane), [wiki](https://ardupilot.org/plane/index.html)
+---
 
-- Rover: [code](https://github.com/ArduPilot/ardupilot/tree/master/Rover), [wiki](https://ardupilot.org/rover/index.html)
+# How to Use
 
-- ArduSub : [code](https://github.com/ArduPilot/ardupilot/tree/master/ArduSub), [wiki](http://ardusub.com/)
+## Preparation
 
-- Antenna Tracker : [code](https://github.com/ArduPilot/ardupilot/tree/master/AntennaTracker), [wiki](https://ardupilot.org/antennatracker/index.html)
+### 1. Clone ArduPilot as the Base Repository
 
-## User Support & Discussion Forums
+Use the ArduPilot repository as the development base:
 
-- Support Forum: <https://discuss.ardupilot.org/>
+```bash
+cd ~
 
-- Community Site: <https://ardupilot.org>
+git clone --recurse-submodules https://github.com/Noctrne/ardupilot.git
 
-## Developer Information
+cd ardupilot
 
-- Github repository: <https://github.com/ArduPilot/ardupilot>
+git submodule update --init --recursive
+```
 
-- Main developer wiki: <https://ardupilot.org/dev/>
+### 2. Check the Target Board
 
-- Developer discussion: <https://discuss.ardupilot.org>
+Make sure the **Pixhawk 6C** target is available:
 
-- Developer chat: <https://discord.com/channels/ardupilot>
+```bash
+./waf list_boards | grep Pixhawk6C
+```
 
-## Top Contributors
+If `Pixhawk6C` appears in the output, the target board is available for the build process.
 
-- [Flight code contributors](https://github.com/ArduPilot/ardupilot/graphs/contributors)
-- [Wiki contributors](https://github.com/ArduPilot/ardupilot_wiki/graphs/contributors)
-- [Most active support forum users](https://discuss.ardupilot.org/u?order=post_count&period=quarterly)
-- [Partners who contribute financially](https://ardupilot.org/about/Partners)
+### 3. Optional: Create a Development Branch
 
-## How To Get Involved
+To keep the main branch clean, create a dedicated development branch:
 
-- The ArduPilot project is open source and we encourage participation and code contributions: [guidelines for contributors to the ardupilot codebase](https://ardupilot.org/dev/docs/contributing.html)
+```bash
+git switch -c 6thrust-6dof
+git status
+```
 
-- We have an active group of Beta Testers to help us improve our code: [release procedures](https://ardupilot.org/dev/docs/release-procedures.html)
+The branch name can be adjusted as needed.
 
-- Desired Enhancements and Bugs can be posted to the [issues list](https://github.com/ArduPilot/ardupilot/issues).
+---
 
-- Help other users with log analysis in the [support forums](https://discuss.ardupilot.org/)
+## Crosscheck
 
-- Improve the wiki and chat with other [wiki editors on Discord #documentation](https://discord.com/channels/ardupilot)
+The main file modified during the customization process is:
 
-- Contact the developers on one of the [communication channels](https://ardupilot.org/copter/docs/common-contact-us.html)
+```text
+ardupilot/
+└── libraries/
+    └── AP_Motors/
+        └── AP_Motors6DOF.cpp
+```
 
-## License
+> **Note:** Ideally, the custom thruster configuration should only require changes to this file.
 
-The ArduPilot project is licensed under the GNU General Public
-License, version 3.
+---
 
-- [Overview of license](https://ardupilot.org/dev/docs/license-gplv3.html)
+# Custom Thruster Configuration
 
-- [Full Text](https://github.com/ArduPilot/ardupilot/blob/master/COPYING.txt)
+## 1. Open `AP_Motors6DOF.cpp`
 
-## Maintainers
+Go to the ArduPilot directory:
 
-ArduPilot is comprised of several parts, vehicles and boards. The list below
-contains the people that regularly contribute to the project and are responsible
-for reviewing patches on their specific area.
+```bash
+cd ~/ardupilot
+```
 
-- [Andrew Tridgell](https://github.com/tridge):
-  - ***Vehicle***: Plane, AntennaTracker
-  - ***Board***: Pixhawk, Pixhawk2, PixRacer
-- [Francisco Ferreira](https://github.com/oxinarf):
-  - ***Bug Master***
-- [Grant Morphett](https://github.com/gmorph):
-  - ***Vehicle***: Rover
-- [Willian Galvani](https://github.com/williangalvani):
-  - ***Vehicle***: Sub
-  - ***Board***: Navigator
-- [Michael du Breuil](https://github.com/WickedShell):
-  - ***Subsystem***: Batteries
-  - ***Subsystem***: GPS
-  - ***Subsystem***: Scripting
-- [Peter Barker](https://github.com/peterbarker):
-  - ***Subsystem***: DataFlash, Tools
-- [Randy Mackay](https://github.com/rmackay9):
-  - ***Vehicle***: Copter, Rover, AntennaTracker
-- [Siddharth Purohit](https://github.com/bugobliterator):
-  - ***Subsystem***: CAN, Compass
-  - ***Board***: Cube*
-- [Tom Pittenger](https://github.com/magicrub):
-  - ***Vehicle***: Plane
-- [Bill Geyer](https://github.com/bnsgeyer):
-  - ***Vehicle***: TradHeli
-- [Emile Castelnuovo](https://github.com/emilecastelnuovo):
-  - ***Board***: VRBrain
-- [Georgii Staroselskii](https://github.com/staroselskii):
-  - ***Board***: NavIO
-- [Gustavo José de Sousa](https://github.com/guludo):
-  - ***Subsystem***: Build system
-- [Julien Beraud](https://github.com/jberaud):
-  - ***Board***: Bebop & Bebop 2
-- [Leonard Hall](https://github.com/lthall):
-  - ***Subsystem***: Copter attitude control and navigation
-- [Matt Lawrence](https://github.com/Pedals2Paddles):
-  - ***Vehicle***: 3DR Solo & Solo based vehicles
-- [Matthias Badaire](https://github.com/badzz):
-  - ***Subsystem***: FRSky
-- [Mirko Denecke](https://github.com/mirkix):
-  - ***Board***: BBBmini, BeagleBone Blue, PocketPilot
-- [Paul Riseborough](https://github.com/priseborough):
-  - ***Subsystem***: AP_NavEKF2
-  - ***Subsystem***: AP_NavEKF3
-- [Víctor Mayoral Vilches](https://github.com/vmayoral):
-  - ***Board***: PXF, Erle-Brain 2, PXFmini
-- [Amilcar Lucas](https://github.com/amilcarlucas):
-  - ***Subsystem***: Marvelmind
-- [Samuel Tabor](https://github.com/samuelctabor):
-  - ***Subsystem***: Soaring/Gliding
-- [Henry Wurzburg](https://github.com/Hwurzburg):
-  - ***Subsystem***: OSD
-  - ***Site***: Wiki
-- [Peter Hall](https://github.com/IamPete1):
-  - ***Vehicle***: Tailsitters
-  - ***Vehicle***: Sailboat
-  - ***Subsystem***: Scripting
-- [Andy Piper](https://github.com/andyp1per):
-  - ***Subsystem***: Crossfire
-  - ***Subsystem***: ESC
-  - ***Subsystem***: OSD
-  - ***Subsystem***: SmartAudio
-- [Alessandro Apostoli](https://github.com/yaapu):
-  - ***Subsystem***: Telemetry
-  - ***Subsystem***: OSD
-- [Rishabh Singh](https://github.com/rishabsingh3003):
-  - ***Subsystem***: Avoidance/Proximity
-- [David Bussenschutt](https://github.com/davidbuzz):
-  - ***Subsystem***: ESP32,AP_HAL_ESP32
-- [Charles Villard](https://github.com/Silvanosky):
-  - ***Subsystem***: ESP32,AP_HAL_ESP32
+Open the file:
+
+```bash
+nano libraries/AP_Motors/AP_Motors6DOF.cpp
+```
+
+Other editors such as `gedit`, `pico`, or VS Code can also be used.
+
+## 2. Configure `SUB_FRAME_CUSTOM`
+
+Find the following section in `AP_Motors6DOF.cpp`:
+
+```cpp
+case SUB_FRAME_CUSTOM:
+    // Put your custom motor setup here
+    // break;
+```
+
+Insert the **thruster allocation matrix** obtained from your configuration into this section.
+
+### Example: 6-Thruster ROV
+
+Before:
+
+```cpp
+case SUB_FRAME_CUSTOM:
+    // Put your custom motor setup here
+    // break;
+```
+
+After:
+
+```cpp
+case SUB_FRAME_CUSTOM:
+
+    _frame_class_string = "MY_CUSTOM";
+
+    add_motor_raw_6dof(AP_MOTORS_MOT_1,  0,       0,       -1.0f,  0,     1.0f,  0,       1);
+    add_motor_raw_6dof(AP_MOTORS_MOT_2,  0,       0,        1.0f,  0,     1.0f,  0,       2);
+    add_motor_raw_6dof(AP_MOTORS_MOT_3,  1.0f,   -1.0f,    -0.5f, -1.0f,  0,       -1.0f,  3);
+    add_motor_raw_6dof(AP_MOTORS_MOT_4, -1.0f,   -1.0f,     0.5f, -1.0f,  0,        1.0f,  4);
+    add_motor_raw_6dof(AP_MOTORS_MOT_5,  1.0f,    1.0f,    -0.5f, -1.0f,  0,        1.0f,  5);
+    add_motor_raw_6dof(AP_MOTORS_MOT_6, -1.0f,    1.0f,     0.5f, -1.0f,  0,       -1.0f,  6);
+
+    break;
+```
+
+### Important: `break;` Must Be Present
+
+Do not remove:
+
+```cpp
+break;
+```
+
+Without `break;`, execution may **fall through** to:
+
+```cpp
+SUB_FRAME_SIMPLEROV_3
+```
+
+which can cause the next frame configuration to be executed as well.
+
+### Keep `SUB_FRAME_CUSTOM`
+
+The custom configuration must remain under:
+
+```cpp
+case SUB_FRAME_CUSTOM:
+```
+
+Do not replace this internal enum with another frame enum.
+
+The following string:
+
+```cpp
+_frame_class_string = "MY_CUSTOM";
+```
+
+is an identifier for the custom frame and can be changed as needed.
+
+---
+
+# Important Design Note
+
+## Do Not Modify `output_armed_stabilizing()`
+
+The ArduSub controller algorithm **does not need to be modified** to use this custom thruster configuration.
+
+In the upstream ArduSub implementation, dedicated output paths are provided for frames such as `VECTORED` and `VECTORED_6DOF`. Meanwhile, `SUB_FRAME_CUSTOM` uses the **generic mixer**, which calculates the following control contributions:
+
+```text
+roll + pitch + yaw
++
+throttle + forward + lateral
+```
+
+> **Do not add `SUB_FRAME_CUSTOM` to the condition that calls `output_armed_stabilizing_vectored_6dof()`.**
+
+Let all ArduSub modes—such as **Stabilize**, **Alt Hold / Depth Hold**, and other control modes—continue to generate controller commands normally. These commands are then passed to the **custom mixer** according to the defined thruster allocation matrix.
+
+The purpose of this research is to modify the **motor control allocation**, not the ArduSub control algorithms.
+
+---
+
+# Verify the Changes
+
+Before building the firmware, review the changes in the repository.
+
+### Check formatting
+
+```bash
+git diff --check
+```
+
+### Review the modified file
+
+```bash
+git diff -- libraries/AP_Motors/AP_Motors6DOF.cpp
+```
+
+Ideally, changes related to the custom configuration should only appear in:
+
+```text
+libraries/AP_Motors/AP_Motors6DOF.cpp
+```
+
+---
+
+# Build Firmware
+
+This repository provides `.sh` scripts to assist the firmware build process using Docker.
+
+## 1. Build the Docker Image
+
+Go to the ArduPilot directory:
+
+```bash
+cd ~/ardupilot
+```
+
+Run:
+
+```bash
+chmod +x Personal_Research/make_dockerimage.sh
+./Personal_Research/make_dockerimage.sh
+```
+
+## 2. Compile the Custom Firmware
+
+After the Docker image has been created successfully:
+
+```bash
+chmod +x Personal_Research/build_customrov.sh
+./Personal_Research/build_customrov.sh
+```
+
+The script compiles the modified firmware.
+
+## 3. Check the Build Output
+
+Check the Pixhawk 6C build directory:
+
+```bash
+cd ~/ardupilot/build/Pixhawk6C/bin/
+```
+
+The resulting firmware is expected to be available as:
+
+```text
+ardusub.apj
+```
+
+---
+
+# Workflow Summary
+
+```text
+Clone ArduPilot
+      │
+      ▼
+Check Pixhawk 6C Target
+      │
+      ▼
+Edit AP_Motors6DOF.cpp
+      │
+      ▼
+Add SUB_FRAME_CUSTOM
+      │
+      ▼
+Verify Git Diff
+      │
+      ▼
+Build Docker Image
+      │
+      ▼
+Compile Custom Firmware
+      │
+      ▼
+Generate ardusub.apj
+```
+
+---
+
+# Project Structure
+
+The relevant repository structure is:
+
+```text
+ardupilot/
+├── libraries/
+│   └── AP_Motors/
+│       └── AP_Motors6DOF.cpp
+│
+└── Personal_Research/
+    ├── make_dockerimage.sh
+    └── build_customrov.sh
+```
+
+---
+
+# Notes
+
+* The thruster configuration is defined through the allocation matrix under `SUB_FRAME_CUSTOM`.
+* The main modification is made in `libraries/AP_Motors/AP_Motors6DOF.cpp`.
+* `output_armed_stabilizing()` does not need to be modified for this custom configuration.
+* The `break;` statement under `SUB_FRAME_CUSTOM` must be preserved.
+* The 6-thruster matrix shown above can be replaced according to the control allocation of the ROV configuration being researched.
+* The default build target described in this README is **Pixhawk 6C**.
+
+---
+
+# License
+
+Add the repository license information here.
+
