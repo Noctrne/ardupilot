@@ -112,7 +112,7 @@ test.ArduCopter/*
 GPATH
 GRTAGS
 GTAGS
-*.apj
+# *.apj
 .gdbinit
 .vscode/*
 !.vscode/extensions.json
