@@ -1,4 +1,4 @@
-# ArduSub Custom
+# ArduSub Customization
 
 This repository contains the results of research on **custom thruster configuration for ROVs using ArduSub firmware**.
 
@@ -315,7 +315,7 @@ ardupilot/
 │
 └── Personal_Research/
     ├── make_dockerimage.sh
-    ├── build_customrov.sh
+    ├── build_customrov_*.sh
     ├── Thruster_Frame
     └── Firmware 
 ```
@@ -333,7 +333,7 @@ ardupilot/
 
 ---
 
-# License
+# Contributor
 
-Add the repository license information here.
+@Noctrne
 
